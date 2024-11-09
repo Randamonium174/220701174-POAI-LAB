@@ -1,0 +1,67 @@
+% Family tree relationships
+parent(john, mary).
+parent(john, bob).
+parent(susan, mary).
+parent(susan, bob).
+parent(mary, alice).
+parent(mary, tom).
+parent(bob, lisa).
+parent(bob, james).
+parent(alice, carl).
+parent(alice, nina).
+
+% Spouse relationships
+spouse(john, susan).
+spouse(bob, linda).
+spouse(mary, david).
+
+% Define symmetric spouse relationship
+married(X, Y) :- spouse(X, Y).
+married(X, Y) :- spouse(Y, X).
+
+% Rule: Siblings
+sibling(X, Y) :-
+    parent(P, X),
+    parent(P, Y),
+    X \= Y.
+
+% Rule: Grandparent
+grandparent(X, Y) :-
+    parent(X, Z),
+    parent(Z, Y).
+
+% Rule: Ancestor (recursive)
+ancestor(X, Y) :-
+    parent(X, Y).
+ancestor(X, Y) :-
+    parent(X, Z),
+    ancestor(Z, Y).
+
+% Rule: Cousin
+cousin(X, Y) :-
+    parent(P1, X),
+    parent(P2, Y),
+    sibling(P1, P2),
+    X \= Y.
+
+% Rule: Aunt/Uncle
+aunt_or_uncle(X, Y) :-
+    sibling(X, P),
+    parent(P, Y).
+
+% Rule: Niece/Nephew
+niece_or_nephew(X, Y) :-
+    aunt_or_uncle(Y, X).
+
+% Rule: In-laws
+parent_in_law(X, Y) :-
+    married(Y, P),
+    parent(X, P).
+    
+% Test if two individuals are siblings by marriage
+sibling_in_law(X, Y) :-
+    sibling(X, S),
+    married(S, Y).
+sibling_in_law(X, Y) :-
+    sibling(Y, S),
+    married(S, X).
